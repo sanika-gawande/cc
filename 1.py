@@ -50,6 +50,10 @@ while True:
 
 start_node = input("\nEnter starting node for BFS: ")
 bfs(graph, start_node)'''
+
+
+// prims algo...
+
 import sys
 
 def min_pst(graph, v):
@@ -270,5 +274,79 @@ def chatbot():
         
 if __name__=="__main__":
     chatbot()
+
+
+
+// A* 
+
+import heapq
+
+# A* Algorithm for Game Search
+def a_star(grid, start, goal):
+    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]  # Right, Left, Down, Up
+    open_list = [(0, start)]  # Priority Queue: (f_score, node)
+    g_score = {start: 0}  # Cost from start to node
+    came_from = {}  # For reconstructing path
+
+    while open_list:
+        _, current = heapq.heappop(open_list)
+
+        if current == goal:
+            path = []
+            while current in came_from:
+                path.append(current)
+                current = came_from[current]
+            return [start] + path[::-1]
+
+        # Explore neighbors
+        for dx, dy in directions:
+            neighbor = (current[0] + dx, current[1] + dy)
+
+            # Check if move is valid (inside grid and not obstacle)
+            if 0 <= neighbor[0] < len(grid) and 0 <= neighbor[1] < len(grid[0]) and grid[neighbor[0]][neighbor[1]] == 0:
+                new_cost = g_score[current] + 1
+                if neighbor not in g_score or new_cost < g_score[neighbor]:
+                    came_from[neighbor] = current
+                    g_score[neighbor] = new_cost
+                    f_score = new_cost + abs(neighbor[0] - goal[0]) + abs(neighbor[1] - goal[1])  # Manhattan distance
+                    heapq.heappush(open_list, (f_score, neighbor))
+
+    return None  # No path found
+
+# Main code
+if _name_ == "_main_":
+    # Input grid size
+    rows, cols = map(int, input("Enter grid size (rows cols): ").split())
+
+    # Input grid
+    print(f"Enter the grid ({rows} rows with {cols} columns each, 0 for free, 1 for obstacle):")
+    grid = []
+    for _ in range(rows):
+        row = list(map(int, input().split()))
+        if len(row) != cols:
+            print("Invalid row size! Please re-enter.")
+            exit()
+        grid.append(row)
+
+    # Input start and goal positions
+    start = tuple(map(int, input("Enter start position (row col): ").split()))
+    goal = tuple(map(int, input("Enter goal position (row col): ").split()))
+
+    # Check if start and goal are valid
+    if not (0 <= start[0] < rows and 0 <= start[1] < cols) or not (0 <= goal[0] < rows and 0 <= goal[1] < cols):
+        print("Invalid start or goal position!")
+        exit()
+    if grid[start[0]][start[1]] == 1 or grid[goal[0]][goal[1]] == 1:
+        print("Start or goal is an obstacle!")
+        exit()
+
+    # Run A* and display result
+    path = a_star(grid, start, goal)
+    if path:
+        print("\nPath found:")
+        for step in path:
+            print(step)
+    else:
+        print("\nNo path found!")
             
             
